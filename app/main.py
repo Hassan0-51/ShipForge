@@ -2,6 +2,10 @@ from fastapi import FastAPI
 
 from app.releases import Release, create_release, get_releases
 
+from app.database import Base, engine
+from app.releases import ReleaseDB
+
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="ShipForge")
 
