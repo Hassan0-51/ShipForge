@@ -1,11 +1,19 @@
-from datetime import datetime
-
 from pydantic import BaseModel
 
 
 class Release(BaseModel):
-    id: int
     version: str
     environment: str
     status: str
-    created_at: datetime
+
+
+releases = []
+
+
+def get_releases():
+    return releases
+
+
+def create_release(release: Release):
+    releases.append(release)
+    return release
