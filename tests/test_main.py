@@ -25,3 +25,25 @@ def test_releases():
 
     assert response.status_code == 200
     assert isinstance(response.json(), list)
+    
+def test_create_release():
+    release = {
+        "version": "1.0.0",
+        "environment": "production",
+        "status": "pending"
+    }
+
+    response = client.post("/releases", json=release)
+
+    assert response.status_code == 200
+    assert response.json() == release
+    
+def test_create_release_invalid():
+    release = {
+        "version": "1.0.0",
+        "environment": "production"
+    }
+
+    response = client.post("/releases", json=release)
+
+    assert response.status_code == 422
