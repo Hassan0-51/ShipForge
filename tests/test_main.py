@@ -143,3 +143,23 @@ def test_create_release_empty_payload():
     response = client.post("/releases", json={})
 
     assert response.status_code == 422
+    
+def test_get_releases_response_schema():
+    response = client.get("/releases")
+
+    assert response.status_code == 200
+
+    releases = response.json()
+
+    for release in releases:
+        assert set(release.keys()) == {
+            "id",
+            "version",
+            "environment",
+            "status"
+        }
+
+        assert isinstance(release["id"], int)
+        assert isinstance(release["version"], str)
+        assert isinstance(release["environment"], str)
+        assert isinstance(release["status"], str)
