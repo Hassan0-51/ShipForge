@@ -80,3 +80,28 @@ def test_create_release_invalid():
     response = client.post("/releases", json=release)
 
     assert response.status_code == 422
+    
+def test_release_response_schema():
+    release = {
+        "version": "3.0.0",
+        "environment": "production",
+        "status": "deployed"
+    }
+
+    response = client.post("/releases", json=release)
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert set(data.keys()) == {
+        "id",
+        "version",
+        "environment",
+        "status"
+    }
+
+    assert isinstance(data["id"], int)
+    assert data["version"] == "3.0.0"
+    assert data["environment"] == "production"
+    assert data["status"] == "deployed"
