@@ -105,3 +105,41 @@ def test_release_response_schema():
     assert data["version"] == "3.0.0"
     assert data["environment"] == "production"
     assert data["status"] == "deployed"
+    
+def test_create_release_missing_version():
+    release = {
+        "environment": "production",
+        "status": "pending"
+    }
+
+    response = client.post("/releases", json=release)
+
+    assert response.status_code == 422
+
+
+def test_create_release_missing_environment():
+    release = {
+        "version": "4.0.0",
+        "status": "pending"
+    }
+
+    response = client.post("/releases", json=release)
+
+    assert response.status_code == 422
+
+
+def test_create_release_missing_status():
+    release = {
+        "version": "4.0.0",
+        "environment": "production"
+    }
+
+    response = client.post("/releases", json=release)
+
+    assert response.status_code == 422
+
+
+def test_create_release_empty_payload():
+    response = client.post("/releases", json={})
+
+    assert response.status_code == 422
