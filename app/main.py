@@ -1,9 +1,15 @@
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
+from sqlalchemy.orm import Session
 
-from app.releases import Release, create_release, get_releases
+from app.database import Base, engine, get_db
+from app.releases import (
+    Release,
+    ReleaseDB,
+    ReleaseResponse,
+    create_release,
+    get_releases
+)
 
-from app.database import Base, engine
-from app.releases import ReleaseDB
 
 Base.metadata.create_all(bind=engine)
 
@@ -25,11 +31,14 @@ def health():
     }
 
 
-@app.get("/releases")
-def releases():
-    return get_releases()
+@app.get("/releases", response_model=list[ReleaseResponse])
+def releases(db: Session = Depends(get_db)):
+    return get_releases(db)
 
 
-@app.post("/releases")
-def add_release(release: Release):
-    return create_release(release)
+@app.post("/releases", response_model=ReleaseResponse)
+def add_release(
+    release: Release,
+    db: Session = Depends(get_db)
+):
+    return create_release(db, release)
