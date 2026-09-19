@@ -1,27 +1,8 @@
-
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import Session
 
 from app.database import Base
-
-class Release(BaseModel):
-    version: str
-    environment: str
-    status: str
-
-
-releases = []
-
-
-def get_releases():
-    return releases
-
-
-def create_release(release: Release):
-    releases.append(release)
-    return release
-
-
 
 
 class ReleaseDB(Base):
@@ -37,3 +18,29 @@ class Release(BaseModel):
     version: str
     environment: str
     status: str
+
+
+class ReleaseResponse(BaseModel):
+    id: int
+    version: str
+    environment: str
+    status: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+def get_releases(db: Session):
+    return db.query(ReleaseDB).all()
+
+
+def create_release(db: Session, release: Release):
+    new_release = ReleaseDB(
+        version=release.version,
+        environment=release.environment,
+        status=release.status
+    )
+
+    db.add(new_release)
+    db.commit()
+    db.refresh(new_release)
+
+    return new_release
