@@ -43,6 +43,33 @@ def test_create_release():
     assert data["environment"] == release["environment"]
     assert data["status"] == release["status"]
     assert "id" in data
+
+def test_created_release_appears_in_get():
+    release = {
+        "version": "2.0.0",
+        "environment": "staging",
+        "status": "pending"
+    }
+
+    create_response = client.post("/releases", json=release)
+
+    assert create_response.status_code == 200
+
+    created = create_response.json()
+
+    response = client.get("/releases")
+
+    assert response.status_code == 200
+
+    releases = response.json()
+
+    assert any(
+        item["id"] == created["id"]
+        and item["version"] == release["version"]
+        and item["environment"] == release["environment"]
+        and item["status"] == release["status"]
+        for item in releases
+    )
     
 def test_create_release_invalid():
     release = {
