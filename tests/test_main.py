@@ -36,7 +36,13 @@ def test_create_release():
     response = client.post("/releases", json=release)
 
     assert response.status_code == 200
-    assert response.json() == release
+
+    data = response.json()
+
+    assert data["version"] == release["version"]
+    assert data["environment"] == release["environment"]
+    assert data["status"] == release["status"]
+    assert "id" in data
     
 def test_create_release_invalid():
     release = {
