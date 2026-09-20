@@ -201,3 +201,15 @@ def test_create_release_invalid_status():
     )
 
     assert response.status_code == 422
+    
+def test_create_release_invalid_environment():
+    response = client.post(
+        "/releases",
+        json={
+            "version": "4.0.0",
+            "environment": "invalid",
+            "status": "pending"
+        }
+    )
+
+    assert response.status_code == 422
