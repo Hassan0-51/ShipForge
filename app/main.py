@@ -7,7 +7,8 @@ from app.releases import (
     ReleaseDB,
     ReleaseResponse,
     create_release,
-    get_releases
+    get_releases,
+    get_release
 )
 
 
