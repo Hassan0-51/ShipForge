@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import Session
 
@@ -17,8 +17,7 @@ class ReleaseDB(Base):
 class Release(BaseModel):
     version: str
     environment: str
-    status: str
-
+    status: str = Field(pattern="^(pending|deployed|failed)$")
 
 class ReleaseResponse(BaseModel):
     id: int
