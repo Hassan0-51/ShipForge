@@ -15,7 +15,7 @@ class ReleaseDB(Base):
 
 
 class Release(BaseModel):
-    version: str
+    version: str = Field(min_length=1)
     environment: str = Field(pattern="^(development|staging|production)$")
     status: str = Field(pattern="^(pending|deployed|failed)$")
 
