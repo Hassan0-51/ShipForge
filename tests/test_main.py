@@ -183,3 +183,9 @@ def test_get_release_by_id():
     assert response.json()["version"] == "2.0.0"
     assert response.json()["environment"] == "production"
     assert response.json()["status"] == "pending"
+    
+def test_get_release_not_found():
+    response = client.get("/releases/999999")
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Release not found"
