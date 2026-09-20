@@ -43,3 +43,19 @@ def add_release(
     db: Session = Depends(get_db)
 ):
     return create_release(db, release)
+
+@app.get("/releases/{release_id}", response_model=ReleaseResponse)
+def release_by_id(
+    release_id: int,
+    db: Session = Depends(get_db)
+):
+    release = get_release(db, release_id)
+
+    if release is None:
+        from fastapi import HTTPException
+        raise HTTPException(
+            status_code=404,
+            detail="Release not found"
+        )
+
+    return release
