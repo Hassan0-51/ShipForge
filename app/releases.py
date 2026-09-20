@@ -44,3 +44,6 @@ def create_release(db: Session, release: Release):
     db.refresh(new_release)
 
     return new_release
+
+def get_release(db: Session, release_id: int):
+    return db.query(ReleaseDB).filter(ReleaseDB.id == release_id).first()
