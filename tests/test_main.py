@@ -189,3 +189,15 @@ def test_get_release_not_found():
 
     assert response.status_code == 404
     assert response.json()["detail"] == "Release not found"
+    
+def test_create_release_invalid_status():
+    response = client.post(
+        "/releases",
+        json={
+            "version": "3.0.0",
+            "environment": "production",
+            "status": "invalid"
+        }
+    )
+
+    assert response.status_code == 422
