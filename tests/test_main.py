@@ -163,3 +163,23 @@ def test_get_releases_response_schema():
         assert isinstance(release["version"], str)
         assert isinstance(release["environment"], str)
         assert isinstance(release["status"], str)
+        
+def test_get_release_by_id():
+    create_response = client.post(
+        "/releases",
+        json={
+            "version": "2.0.0",
+            "environment": "production",
+            "status": "pending"
+        }
+    )
+
+    release_id = create_response.json()["id"]
+
+    response = client.get(f"/releases/{release_id}")
+
+    assert response.status_code == 200
+    assert response.json()["id"] == release_id
+    assert response.json()["version"] == "2.0.0"
+    assert response.json()["environment"] == "production"
+    assert response.json()["status"] == "pending"
