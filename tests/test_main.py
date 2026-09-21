@@ -248,3 +248,35 @@ def test_delete_release_not_found():
 
     assert response.status_code == 404
     assert response.json()["detail"] == "Release not found"
+    
+def test_update_release():
+    create_response = client.post(
+        "/releases",
+        json={
+            "version": "6.0.0",
+            "environment": "development",
+            "status": "pending"
+        }
+    )
+
+    assert create_response.status_code == 200
+
+    release_id = create_response.json()["id"]
+
+    update_response = client.put(
+        f"/releases/{release_id}",
+        json={
+            "version": "6.1.0",
+            "environment": "staging",
+            "status": "deployed"
+        }
+    )
+
+    assert update_response.status_code == 200
+
+    data = update_response.json()
+
+    assert data["id"] == release_id
+    assert data["version"] == "6.1.0"
+    assert data["environment"] == "staging"
+    assert data["status"] == "deployed"
