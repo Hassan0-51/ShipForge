@@ -280,3 +280,16 @@ def test_update_release():
     assert data["version"] == "6.1.0"
     assert data["environment"] == "staging"
     assert data["status"] == "deployed"
+    
+def test_update_release_not_found():
+    response = client.put(
+        "/releases/999999",
+        json={
+            "version": "7.0.0",
+            "environment": "production",
+            "status": "deployed"
+        }
+    )
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Release not found"
