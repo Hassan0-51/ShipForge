@@ -46,3 +46,29 @@ def create_release(db: Session, release: Release):
 
 def get_release(db: Session, release_id: int):
     return db.query(ReleaseDB).filter(ReleaseDB.id == release_id).first()
+
+def delete_release(db: Session, release_id: int):
+    release = get_release(db, release_id)
+
+    if release is None:
+        return None
+
+    db.delete(release)
+    db.commit()
+
+    return release
+
+def update_release(db: Session, release_id: int, release: Release):
+    existing_release = get_release(db, release_id)
+
+    if existing_release is None:
+        return None
+
+    existing_release.version = release.version
+    existing_release.environment = release.environment
+    existing_release.status = release.status
+
+    db.commit()
+    db.refresh(existing_release)
+
+    return existing_release
