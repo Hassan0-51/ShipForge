@@ -213,3 +213,32 @@ def test_create_release_invalid_environment():
     )
 
     assert response.status_code == 422
+    
+def test_delete_release():
+    create_response = client.post(
+        "/releases",
+        json={
+            "version": "5.0.0",
+            "environment": "staging",
+            "status": "pending"
+        }
+    )
+
+    assert create_response.status_code == 200
+
+    release_id = create_response.json()["id"]
+
+    delete_response = client.delete(
+        f"/releases/{release_id}"
+    )
+
+    assert delete_response.status_code == 200
+    assert delete_response.json()["message"] == "Release deleted successfully"
+    assert delete_response.json()["id"] == release_id
+
+    get_response = client.get(
+        f"/releases/{release_id}"
+    )
+
+    assert get_response.status_code == 404
+    assert get_response.json()["detail"] == "Release not found"
