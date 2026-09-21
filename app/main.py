@@ -8,7 +8,9 @@ from app.releases import (
     ReleaseResponse,
     create_release,
     get_releases,
-    get_release
+    get_release,
+    delete_release,
+    update_release
 )
 
 
@@ -59,3 +61,39 @@ def release_by_id(
         )
 
     return release
+
+@app.delete("/releases/{release_id}")
+def delete_release_by_id(
+    release_id: int,
+    db: Session = Depends(get_db)
+):
+    release = delete_release(db, release_id)
+
+    if release is None:
+        from fastapi import HTTPException
+        raise HTTPException(
+            status_code=404,
+            detail="Release not found"
+        )
+
+    return {
+        "message": "Release deleted successfully",
+        "id": release.id
+    }
+    
+@app.put("/releases/{release_id}", response_model=ReleaseResponse)
+def update_release_by_id(
+    release_id: int,
+    release: Release,
+    db: Session = Depends(get_db)
+):
+    updated_release = update_release(db, release_id, release)
+
+    if updated_release is None:
+        from fastapi import HTTPException
+        raise HTTPException(
+            status_code=404,
+            detail="Release not found"
+        )
+
+    return updated_release
