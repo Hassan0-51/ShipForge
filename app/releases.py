@@ -27,9 +27,13 @@ class ReleaseResponse(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-def get_releases(db: Session):
-    return db.query(ReleaseDB).all()
+def get_releases(db: Session, environment: str = None):
+    query = db.query(ReleaseDB)
 
+    if environment:
+        query = query.filter(ReleaseDB.environment == environment)
+
+    return query.all()
 
 def create_release(db: Session, release: Release):
     new_release = ReleaseDB(
