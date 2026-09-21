@@ -242,3 +242,9 @@ def test_delete_release():
 
     assert get_response.status_code == 404
     assert get_response.json()["detail"] == "Release not found"
+    
+def test_delete_release_not_found():
+    response = client.delete("/releases/999999")
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Release not found"
