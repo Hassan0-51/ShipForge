@@ -27,11 +27,18 @@ class ReleaseResponse(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-def get_releases(db: Session, environment: str = None):
+def get_releases(
+    db: Session,
+    environment: str = None,
+    status: str = None
+):
     query = db.query(ReleaseDB)
 
     if environment:
         query = query.filter(ReleaseDB.environment == environment)
+
+    if status:
+        query = query.filter(ReleaseDB.status == status)
 
     return query.all()
 
