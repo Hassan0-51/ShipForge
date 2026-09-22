@@ -323,3 +323,33 @@ def test_get_releases_by_environment():
 
     for release in releases:
         assert release["environment"] == "production"
+        
+def test_get_releases_by_status():
+    client.post(
+        "/releases",
+        json={
+            "version": "9.0.0",
+            "environment": "production",
+            "status": "deployed"
+        }
+    )
+
+    client.post(
+        "/releases",
+        json={
+            "version": "9.1.0",
+            "environment": "staging",
+            "status": "pending"
+        }
+    )
+
+    response = client.get("/releases?status=deployed")
+
+    assert response.status_code == 200
+
+    releases = response.json()
+
+    assert len(releases) >= 1
+
+    for release in releases:
+        assert release["status"] == "deployed"
