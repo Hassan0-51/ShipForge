@@ -35,9 +35,11 @@ def health():
 
 
 @app.get("/releases", response_model=list[ReleaseResponse])
-def releases(db: Session = Depends(get_db)):
-    return get_releases(db)
-
+def releases(
+    environment: str = None,
+    db: Session = Depends(get_db)
+):
+    return get_releases(db, environment)
 
 @app.post("/releases", response_model=ReleaseResponse)
 def add_release(

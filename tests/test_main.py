@@ -293,3 +293,33 @@ def test_update_release_not_found():
 
     assert response.status_code == 404
     assert response.json()["detail"] == "Release not found"
+    
+def test_get_releases_by_environment():
+    client.post(
+        "/releases",
+        json={
+            "version": "8.0.0",
+            "environment": "production",
+            "status": "deployed"
+        }
+    )
+
+    client.post(
+        "/releases",
+        json={
+            "version": "8.1.0",
+            "environment": "staging",
+            "status": "pending"
+        }
+    )
+
+    response = client.get("/releases?environment=production")
+
+    assert response.status_code == 200
+
+    releases = response.json()
+
+    assert len(releases) >= 1
+
+    for release in releases:
+        assert release["environment"] == "production"
