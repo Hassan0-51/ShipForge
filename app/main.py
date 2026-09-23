@@ -30,9 +30,9 @@ def root():
 @app.get("/health")
 def health():
     return {
-        "status": "healthy"
+        "status": "ok",
+        "service": "ShipForge"
     }
-
 
 @app.get("/releases", response_model=list[ReleaseResponse])
 def releases(
