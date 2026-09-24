@@ -10,7 +10,8 @@ from app.releases import (
     get_releases,
     get_release,
     delete_release,
-    update_release
+    update_release,
+    get_release_stats
 )
 
 
@@ -26,13 +27,18 @@ def root():
         "version": "0.1.0"
     }
 
-
 @app.get("/health")
 def health():
     return {
         "status": "ok",
         "service": "ShipForge"
     }
+    
+@app.get("/releases/stats")
+def release_stats(
+    db: Session = Depends(get_db)
+):
+    return get_release_stats(db)
 
 @app.get("/releases", response_model=list[ReleaseResponse])
 def releases(
