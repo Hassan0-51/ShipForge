@@ -45,9 +45,11 @@ def release_stats(
 def releases(
     environment: str = None,
     status: str = None,
+    skip: int = 0,
+    limit: int = None,
     db: Session = Depends(get_db)
 ):
-    return get_releases(db, environment, status)
+    return get_releases(db, environment, status, skip, limit)
 
 @app.post("/releases", response_model=ReleaseResponse)
 def add_release(
