@@ -11,7 +11,8 @@ from app.releases import (
     get_release,
     delete_release,
     update_release,
-    get_release_stats
+    get_release_stats,
+    search_releases
 )
 
 
@@ -54,6 +55,13 @@ def add_release(
     db: Session = Depends(get_db)
 ):
     return create_release(db, release)
+
+@app.get("/releases/search", response_model=list[ReleaseResponse])
+def search_release_versions(
+    version: str,
+    db: Session = Depends(get_db)
+):
+    return search_releases(db, version)
 
 @app.get("/releases/{release_id}", response_model=ReleaseResponse)
 def release_by_id(
