@@ -87,6 +87,14 @@ def get_release_stats(db: Session):
         )
     }
 
+def search_releases(db: Session, version: str):
+    return (
+        db.query(ReleaseDB)
+        .filter(ReleaseDB.version.ilike(f"%{version}%"))
+        .all()
+    )
+    
+    
 def update_release(db: Session, release_id: int, release: Release):
     existing_release = get_release(db, release_id)
 
