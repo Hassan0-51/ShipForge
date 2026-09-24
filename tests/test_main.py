@@ -423,3 +423,22 @@ def test_search_releases_by_version():
 
     for release in releases:
         assert "11.0" in release["version"]
+        
+def test_get_releases_with_pagination():
+    for version in ["12.0.0", "12.1.0", "12.2.0"]:
+        client.post(
+            "/releases",
+            json={
+                "version": version,
+                "environment": "production",
+                "status": "pending"
+            }
+        )
+
+    response = client.get("/releases?skip=0&limit=2")
+
+    assert response.status_code == 200
+
+    releases = response.json()
+
+    assert len(releases) <= 2
