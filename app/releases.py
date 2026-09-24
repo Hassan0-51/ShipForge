@@ -30,7 +30,9 @@ class ReleaseResponse(BaseModel):
 def get_releases(
     db: Session,
     environment: str = None,
-    status: str = None
+    status: str = None,
+    skip: int = 0,
+    limit: int = None
 ):
     query = db.query(ReleaseDB)
 
@@ -39,6 +41,9 @@ def get_releases(
 
     if status:
         query = query.filter(ReleaseDB.status == status)
+
+    if limit is not None:
+        query = query.offset(skip).limit(limit)
 
     return query.all()
 
