@@ -354,3 +354,42 @@ def test_get_releases_by_status():
 
     for release in releases:
         assert release["status"] == "deployed"
+        
+def test_release_stats():
+    client.post(
+        "/releases",
+        json={
+            "version": "10.0.0",
+            "environment": "production",
+            "status": "deployed"
+        }
+    )
+
+    client.post(
+        "/releases",
+        json={
+            "version": "10.1.0",
+            "environment": "staging",
+            "status": "pending"
+        }
+    )
+
+    client.post(
+        "/releases",
+        json={
+            "version": "10.2.0",
+            "environment": "production",
+            "status": "failed"
+        }
+    )
+
+    response = client.get("/releases/stats")
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data["total"] >= 3
+    assert data["pending"] >= 1
+    assert data["deployed"] >= 1
+    assert data["failed"] >= 1
