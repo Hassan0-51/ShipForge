@@ -68,6 +68,24 @@ def delete_release(db: Session, release_id: int):
     db.commit()
 
     return release
+def get_release_stats(db: Session):
+    releases = db.query(ReleaseDB).all()
+
+    return {
+        "total": len(releases),
+        "pending": sum(
+            1 for release in releases
+            if release.status == "pending"
+        ),
+        "deployed": sum(
+            1 for release in releases
+            if release.status == "deployed"
+        ),
+        "failed": sum(
+            1 for release in releases
+            if release.status == "failed"
+        )
+    }
 
 def update_release(db: Session, release_id: int, release: Release):
     existing_release = get_release(db, release_id)
