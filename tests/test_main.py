@@ -393,3 +393,33 @@ def test_release_stats():
     assert data["pending"] >= 1
     assert data["deployed"] >= 1
     assert data["failed"] >= 1
+    
+def test_search_releases_by_version():
+    client.post(
+        "/releases",
+        json={
+            "version": "11.0.0",
+            "environment": "production",
+            "status": "deployed"
+        }
+    )
+
+    client.post(
+        "/releases",
+        json={
+            "version": "11.1.0",
+            "environment": "staging",
+            "status": "pending"
+        }
+    )
+
+    response = client.get("/releases/search?version=11.0")
+
+    assert response.status_code == 200
+
+    releases = response.json()
+
+    assert len(releases) >= 1
+
+    for release in releases:
+        assert "11.0" in release["version"]
