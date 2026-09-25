@@ -1,7 +1,8 @@
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import Session
-
+from datetime import datetime
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
 from app.database import Base
 
 
@@ -13,6 +14,13 @@ class ReleaseDB(Base):
     environment = Column(String, nullable=False)
     status = Column(String, nullable=False)
 
+class DeploymentDB(Base):
+    __tablename__ = "deployments"
+
+    id = Column(Integer, primary_key=True, index=True)
+    release_id = Column(Integer, ForeignKey("releases.id"), nullable=False)
+    status = Column(String, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
 class Release(BaseModel):
     version: str = Field(min_length=1)
