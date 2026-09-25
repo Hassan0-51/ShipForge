@@ -12,9 +12,9 @@ from app.releases import (
     delete_release,
     update_release,
     get_release_stats,
-    search_releases
+    search_releases,
+    deploy_release
 )
-
 
 Base.metadata.create_all(bind=engine)
 
@@ -116,3 +116,28 @@ def update_release_by_id(
         )
 
     return updated_release
+
+@app.post("/releases/{release_id}/deploy", response_model=ReleaseResponse)
+def deploy_release_by_id(
+    release_id: int,
+    db: Session = Depends(get_db)
+):
+    release = deploy_release(db, release_id)
+
+    if release is None:
+        from fastapi import HTTPException
+
+        raise HTTPException(
+            status_code=404,
+            detail="Release not found"
+        )
+
+    if release is False:
+        from fastapi import HTTPException
+
+        raise HTTPException(
+            status_code=409,
+            detail="Release cannot be deployed from its current status"
+        )
+
+    return release
