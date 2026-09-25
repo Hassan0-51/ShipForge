@@ -5,6 +5,7 @@ from app.database import Base, engine, get_db
 from app.releases import (
     Release,
     ReleaseDB,
+    DeploymentDB,
     ReleaseResponse,
     create_release,
     get_releases,
