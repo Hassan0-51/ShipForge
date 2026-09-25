@@ -22,6 +22,18 @@ class DeploymentDB(Base):
     status = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
+def create_deployment(db: Session, release_id: int, status: str = "deployed"):
+    deployment = DeploymentDB(
+        release_id=release_id,
+        status=status
+    )
+
+    db.add(deployment)
+    db.commit()
+    db.refresh(deployment)
+
+    return deployment
+
 class Release(BaseModel):
     version: str = Field(min_length=1)
     environment: str = Field(pattern="^(development|staging|production)$")
@@ -136,5 +148,7 @@ def deploy_release(db: Session, release_id: int):
 
     db.commit()
     db.refresh(release)
+
+    create_deployment(db, release.id)
 
     return release
