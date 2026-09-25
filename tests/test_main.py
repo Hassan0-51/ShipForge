@@ -442,3 +442,47 @@ def test_get_releases_with_pagination():
     releases = response.json()
 
     assert len(releases) <= 2
+    
+def test_deploy_pending_release():
+    response = client.post(
+        "/releases",
+        json={
+            "version": "1.0.0",
+            "environment": "development",
+            "status": "pending"
+        }
+    )
+
+    release_id = response.json()["id"]
+
+    response = client.post(f"/releases/{release_id}/deploy")
+
+    assert response.status_code == 200
+    assert response.json()["status"] == "deployed"
+
+
+def test_deploy_non_pending_release():
+    response = client.post(
+        "/releases",
+        json={
+            "version": "1.0.1",
+            "environment": "development",
+            "status": "deployed"
+        }
+    )
+
+    release_id = response.json()["id"]
+
+    response = client.post(f"/releases/{release_id}/deploy")
+
+    assert response.status_code == 409
+    assert response.json()["detail"] == (
+        "Release cannot be deployed from its current status"
+    )
+
+
+def test_deploy_nonexistent_release():
+    response = client.post("/releases/999999/deploy")
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Release not found"
