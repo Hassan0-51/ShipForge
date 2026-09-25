@@ -114,3 +114,19 @@ def update_release(db: Session, release_id: int, release: Release):
     db.refresh(existing_release)
 
     return existing_release
+
+def deploy_release(db: Session, release_id: int):
+    release = get_release(db, release_id)
+
+    if release is None:
+        return None
+
+    if release.status != "pending":
+        return False
+
+    release.status = "deployed"
+
+    db.commit()
+    db.refresh(release)
+
+    return release
