@@ -523,3 +523,36 @@ def test_get_release_deployments():
     assert deployment["status"] == "deployed"
     assert "id" in deployment
     assert "created_at" in deployment
+    
+def test_deployment_stats():
+    response = client.post(
+        "/releases",
+        json={
+            "version": "14.0.0",
+            "environment": "production",
+            "status": "pending"
+        }
+    )
+
+    assert response.status_code == 200
+
+    release_id = response.json()["id"]
+
+    deploy_response = client.post(
+        f"/releases/{release_id}/deploy"
+    )
+
+    assert deploy_response.status_code == 200
+
+    response = client.get("/deployments/stats")
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert "total" in data
+    assert "deployed" in data
+    assert "failed" in data
+
+    assert data["total"] >= 1
+    assert data["deployed"] >= 1
