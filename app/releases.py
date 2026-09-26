@@ -21,6 +21,14 @@ class DeploymentDB(Base):
     release_id = Column(Integer, ForeignKey("releases.id"), nullable=False)
     status = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    
+class DeploymentResponse(BaseModel):
+    id: int
+    release_id: int
+    status: str
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
 
 def create_deployment(db: Session, release_id: int, status: str = "deployed"):
     deployment = DeploymentDB(
