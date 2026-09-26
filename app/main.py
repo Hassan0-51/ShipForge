@@ -1,4 +1,4 @@
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
 
 from app.database import Base, engine, get_db
@@ -7,6 +7,7 @@ from app.releases import (
     ReleaseDB,
     DeploymentDB,
     ReleaseResponse,
+    DeploymentResponse,
     create_release,
     get_releases,
     get_release,
@@ -142,3 +143,17 @@ def deploy_release_by_id(
         )
 
     return release
+
+@app.get("/releases/{release_id}/deployments", response_model=list[DeploymentResponse])
+def get_release_deployments(release_id: int, db: Session = Depends(get_db)):
+    release = db.query(ReleaseDB).filter(ReleaseDB.id == release_id).first()
+
+    if not release:
+        raise HTTPException(status_code=404, detail="Release not found")
+
+    return (
+        db.query(DeploymentDB)
+        .filter(DeploymentDB.release_id == release_id)
+        .order_by(DeploymentDB.created_at.desc())
+        .all()
+    )
