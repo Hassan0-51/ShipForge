@@ -146,18 +146,27 @@ def deploy_release_by_id(
     return release
 
 @app.get("/releases/{release_id}/deployments", response_model=list[DeploymentResponse])
-def get_release_deployments(release_id: int, db: Session = Depends(get_db)):
+def get_release_deployments(
+    release_id: int,
+    status: str = None,
+    db: Session = Depends(get_db)
+    ):
     release = db.query(ReleaseDB).filter(ReleaseDB.id == release_id).first()
 
     if not release:
         raise HTTPException(status_code=404, detail="Release not found")
 
-    return (
-        db.query(DeploymentDB)
-        .filter(DeploymentDB.release_id == release_id)
-        .order_by(DeploymentDB.created_at.desc())
-        .all()
+    query = (
+    db.query(DeploymentDB)
+    .filter(DeploymentDB.release_id == release_id)
     )
+
+    if status:
+        query = query.filter(DeploymentDB.status == status)
+
+    return query.order_by(
+    DeploymentDB.created_at.desc()
+    ).all()
     
 @app.get("/deployments/stats")
 def deployment_stats(
