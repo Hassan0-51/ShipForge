@@ -486,3 +486,40 @@ def test_deploy_nonexistent_release():
 
     assert response.status_code == 404
     assert response.json()["detail"] == "Release not found"
+    
+def test_get_release_deployments():
+    create_response = client.post(
+        "/releases",
+        json={
+            "version": "13.0.0",
+            "environment": "production",
+            "status": "pending"
+        }
+    )
+
+    assert create_response.status_code == 200
+
+    release_id = create_response.json()["id"]
+
+    deploy_response = client.post(
+        f"/releases/{release_id}/deploy"
+    )
+
+    assert deploy_response.status_code == 200
+
+    response = client.get(
+        f"/releases/{release_id}/deployments"
+    )
+
+    assert response.status_code == 200
+
+    deployments = response.json()
+
+    assert len(deployments) >= 1
+
+    deployment = deployments[0]
+
+    assert deployment["release_id"] == release_id
+    assert deployment["status"] == "deployed"
+    assert "id" in deployment
+    assert "created_at" in deployment
