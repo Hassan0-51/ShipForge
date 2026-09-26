@@ -42,6 +42,21 @@ def create_deployment(db: Session, release_id: int, status: str = "deployed"):
 
     return deployment
 
+def get_deployment_stats(db: Session):
+    deployments = db.query(DeploymentDB).all()
+
+    return {
+        "total": len(deployments),
+        "deployed": sum(
+            1 for deployment in deployments
+            if deployment.status == "deployed"
+        ),
+        "failed": sum(
+            1 for deployment in deployments
+            if deployment.status == "failed"
+        )
+    }
+
 class Release(BaseModel):
     version: str = Field(min_length=1)
     environment: str = Field(pattern="^(development|staging|production)$")
