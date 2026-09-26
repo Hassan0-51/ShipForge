@@ -11,6 +11,7 @@ from app.releases import (
     create_release,
     get_releases,
     get_release,
+    get_deployment_stats,
     delete_release,
     update_release,
     get_release_stats,
@@ -157,3 +158,9 @@ def get_release_deployments(release_id: int, db: Session = Depends(get_db)):
         .order_by(DeploymentDB.created_at.desc())
         .all()
     )
+    
+@app.get("/deployments/stats")
+def deployment_stats(
+    db: Session = Depends(get_db)
+):
+    return get_deployment_stats(db)
