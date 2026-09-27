@@ -556,3 +556,4 @@ def test_deployment_stats():
 
     assert data["total"] >= 1
     assert data["deployed"] >= 1
+    
