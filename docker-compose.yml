@@ -1,0 +1,25 @@
+services:
+  db:
+    image: postgres:16
+    container_name: shipforge-db
+    environment:
+      POSTGRES_DB: shipforge
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    container_name: shipforge-app
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql://postgres:root@db:5432/shipforge
+    ports:
+      - "8000:8000"
+
+volumes:
+  postgres_data:
